@@ -1,0 +1,24 @@
+{
+  "name": "@kingkongdevs/vite-plugin-svg-inline",
+  "version": "0.0.1",
+  "description": "Plugin for Vite that replaces references to svgs to inline svg code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kingkongdevs/vite-plugin-svg-inline.git"
+  },
+  "author": "King Kong Devs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kingkongdevs/vite-plugin-svg-inline/issues"
+  },
+  "homepage": "https://github.com/kingkongdevs/vite-plugin-svg-inline#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "node-html-parser": "^6.1.12",
+    "path": "^0.12.7"
+  }
+}
