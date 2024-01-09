@@ -5,7 +5,7 @@ import { optimize } from 'svgo';
 
 module.exports = (options) => {
   return {
-    name: 'my-svg-plugin',
+    name: 'vite-plugin-svg-inline',
     async transformIndexHtml(html) {
       return new Promise(async (resolve, reject) => {
         const root = parse(html);
