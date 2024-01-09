@@ -49,9 +49,8 @@ plugins: [
 ```
 {
   plugins: [
-    { removeXMLNS: true },
-    { removeViewBox: false },
-    { removeDimensions: true },
+    "removeDimensions",
+    "removeXMLNS"
   ]
 }
 ```
