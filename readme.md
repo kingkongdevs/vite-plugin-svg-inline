@@ -68,8 +68,5 @@ HTML:
 
 Output: 
 ```
-<picture>
-  <source data-srcset="/assets/images/placeholder-320px.webp 320w, /assets/images/placeholder-640px.webp 640w, /assets/images/placeholder-1024px.webp 1024w" type="image/webp" />
-  <img data-src="assets/images/placeholder.png" alt="" width="1900" height="1200" class="lazyload" />
-</picture>
+<svg viewBox="0 0 183 183" fill="none" class="img-fluid view-animation animated"><circle opacity="0.2" cx="91.6048" cy="91.2669" r="91.0989" fill="#4AC186"></circle><circle cx="91.6051" cy="91.2662" r="62.1129" fill="#4AC186"></circle><path d="M112.311 92.302L81.2541 110.232L81.2541 74.3715L112.311 92.302Z" fill="white"></path></svg>
 ```
