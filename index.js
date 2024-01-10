@@ -1,19 +1,19 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { parse } from 'node-html-parser';
-import { optimize } from 'svgo';
+const fs = require('fs');
+const path = require('path');
+const nodeHtmlParser = require('node-html-parser');
+const svgo = require('svgo');
 
 module.exports = (options) => {
   return {
     name: 'vite-plugin-svg-inline',
     async transformIndexHtml(html) {
       return new Promise(async (resolve, reject) => {
-        const root = parse(html);
+        const root = nodeHtmlParser.parse(html);
 
         const tag = options.tag || 'svg';
         const attr = options.attr || 'src';
         const cwd = options.cwd || process.cwd();
-        const svgo = options.svgo || {
+        const svgoOptions = options.svgo || {
           plugins: [
             "removeDimensions",
             "removeXMLNS"
@@ -21,16 +21,16 @@ module.exports = (options) => {
         };
 
         root.querySelectorAll(tag).forEach(node => {
-          const filePath = join(cwd, node.getAttribute(attr));
+          const filePath = path.join(cwd, node.getAttribute(attr));
 
           try {
-            let svgContent = readFileSync(filePath, 'utf-8');
+            let svgContent = fs.readFileSync(filePath, 'utf-8');
 
             // Optimize the SVG content
-            const optimizedSvg = optimize(svgContent, svgo);
+            const optimizedSvg = svgo.optimize(svgContent, svgoOptions);
 
             svgContent = optimizedSvg.data;
-            const svgRoot = parse(svgContent, { script: true });
+            const svgRoot = nodeHtmlParser.parse(svgContent, { script: true });
 
             const originalClass = node.getAttribute('class');
             if (originalClass) {
