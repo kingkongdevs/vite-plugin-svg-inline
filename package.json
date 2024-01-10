@@ -1,6 +1,6 @@
 {
   "name": "@kingkongdevs/vite-plugin-svg-inline",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Plugin for Vite that replaces references to svgs to inline svg code",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,6 @@
     "fs": "^0.0.1-security",
     "node-html-parser": "^6.1.12",
     "path": "^0.12.7"
-  }
+  },
+  "devDependencies": {}
 }
