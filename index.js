@@ -24,6 +24,10 @@ module.exports = (options) => {
           const filePath = path.join(cwd, node.getAttribute(attr));
 
           try {
+            // Capture width and height attributes if they exist
+            const width = node.getAttribute('width');
+            const height = node.getAttribute('height');
+
             let svgContent = fs.readFileSync(filePath, 'utf-8');
 
             // Optimize the SVG content
@@ -32,10 +36,15 @@ module.exports = (options) => {
             svgContent = optimizedSvg.data;
             const svgRoot = nodeHtmlParser.parse(svgContent, { script: true });
 
+            // Set the original class attribute if it exists
             const originalClass = node.getAttribute('class');
             if (originalClass) {
               svgRoot.firstChild.setAttribute('class', originalClass);
             }
+
+            // Set the captured width and height attributes to the SVG
+            if (width) svgRoot.firstChild.setAttribute('width', width);
+            if (height) svgRoot.firstChild.setAttribute('height', height);
 
             node.replaceWith(svgRoot.firstChild.toString());
           } catch (error) {
