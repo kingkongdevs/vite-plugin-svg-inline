@@ -1,15 +1,14 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const nodeHtmlParser = require('node-html-parser');
-const svgo = require('svgo');
+const { optimize } = require('svgo');
 
 module.exports = (options) => {
   return {
     name: 'vite-plugin-svg-inline',
     async transformIndexHtml(html) {
-      return new Promise(async (resolve, reject) => {
+      try {
         const root = nodeHtmlParser.parse(html);
-
         const tag = options.tag || 'svg';
         const attr = options.attr || 'src';
         const cwd = options.cwd || process.cwd();
@@ -20,40 +19,54 @@ module.exports = (options) => {
           ]
         };
 
-        root.querySelectorAll(tag).forEach(node => {
-          const filePath = path.join(cwd, node.getAttribute(attr));
+        const nodes = root.querySelectorAll(tag);
+        // console.log(`Found ${nodes.length} ${tag} tags`);
 
+        await Promise.all(nodes.map(async (node) => {
+          const src = node.getAttribute(attr);
+          if (!src) {
+            console.log(`Skipping node without ${attr} attribute`);
+            return;
+          }
+
+          const filePath = path.join(cwd, src);
           try {
-            // Capture width and height attributes if they exist
-            const width = node.getAttribute('width');
-            const height = node.getAttribute('height');
-
-            let svgContent = fs.readFileSync(filePath, 'utf-8');
+            const svgContent = await fs.readFile(filePath, 'utf-8');
 
             // Optimize the SVG content
-            const optimizedSvg = svgo.optimize(svgContent, svgoOptions);
+            const optimizedSvg = await optimize(svgContent, svgoOptions);
 
-            svgContent = optimizedSvg.data;
-            const svgRoot = nodeHtmlParser.parse(svgContent, { script: true });
+            const svgRoot = nodeHtmlParser.parse(optimizedSvg.data, { script: true });
+            const svgElement = svgRoot.querySelector('svg');
 
-            // Set the original class attribute if it exists
-            const originalClass = node.getAttribute('class');
-            if (originalClass) {
-              svgRoot.firstChild.setAttribute('class', originalClass);
+            if (svgElement) {
+              // Set the original class attribute if it exists
+              const originalClass = node.getAttribute('class');
+              if (originalClass) {
+                svgElement.setAttribute('class', originalClass);
+              }
+
+              // Capture and set width and height attributes
+              const width = node.getAttribute('width');
+              const height = node.getAttribute('height');
+              if (width) svgElement.setAttribute('width', width);
+              if (height) svgElement.setAttribute('height', height);
+
+              node.replaceWith(svgElement.toString());
+              // console.log(`Replaced SVG content from ${filePath}`);
+            } else {
+              console.error(`SVG element not found in optimized content for file at ${filePath}`);
             }
-
-            // Set the captured width and height attributes to the SVG
-            if (width) svgRoot.firstChild.setAttribute('width', width);
-            if (height) svgRoot.firstChild.setAttribute('height', height);
-
-            node.replaceWith(svgRoot.firstChild.toString());
           } catch (error) {
-            console.error(`Error reading or optimizing SVG file at ${filePath}:`, error);
+            console.error(`Error processing SVG file at ${filePath}:`, error);
           }
-        });
+        }));
 
-        resolve(root.toString());
-      });
+        return root.toString();
+      } catch (error) {
+        console.error('Error during transformIndexHtml:', error);
+        throw error;
+      }
     }
   };
 };
