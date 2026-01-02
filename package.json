@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/kingkongdevs/vite-plugin-svg-inline#readme",
   "dependencies": {
-    "fs": "^0.0.1-security",
-    "node-html-parser": "^6.1.12",
+    "fs": "0.0.1-security",
+    "node-html-parser": "^7.0.1",
     "path": "^0.12.7",
-    "svgo": "^3.2.0"
+    "svgo": "^4.0.0"
   }
 }
