@@ -12,6 +12,7 @@ module.exports = (options) => {
         const tag = options.tag || 'svg';
         const attr = options.attr || 'src';
         const cwd = options.cwd || process.cwd();
+        const preserveAttributes = options.preserveAttributes || [];
         const svgoOptions = options.svgo || {
           plugins: [
             "removeDimensions",
@@ -44,6 +45,24 @@ module.exports = (options) => {
               const originalClass = node.getAttribute('class');
               if (originalClass) {
                 svgElement.setAttribute('class', originalClass);
+              }
+
+              // Copy preserved attributes
+              if (Array.isArray(preserveAttributes)) {
+                preserveAttributes.forEach((attr) => {
+                  const value = node.getAttribute(attr);
+                  if (value) {
+                    svgElement.setAttribute(attr, value);
+                  }
+                });
+              } else if (
+                typeof preserveAttributes === "boolean" &&
+                preserveAttributes
+              ) {
+                for ([name, value] of Object.entries(node.attributes)) {
+                  if (name === attr) { continue; }
+                  svgElement.setAttribute(name, value);
+                }
               }
 
               // Capture and set width and height attributes
